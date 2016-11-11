@@ -108,6 +108,17 @@ Use `Shift+Insert` to paste from clipboard.
 | `C-x C-n` | - | Open new window |
 | `C-x C-b` | - | Create new file and open |
 
+### Rectangles command
+|Command | Status | Desc |
+|--------|--------|------|
+| `C-x r r` | OK | Copy rectangle to register |
+| `C-x r k` | OK | Kill rectangle |
+| `C-x r y` | OK | Yank rectangle |
+| `C-x r o` | OK | Open rectangle, shifting text right |
+| `C-x r c` | OK | Blank out rectangle |
+| `C-x r t` | -- | Replace each line with a string |
+
+
 ## Conflicts with default key bindings
 - `ctrl+d`: editor.action.addSelectionToNextFindMatch => **Use `ctrl+alt+n` instead**;
 - `ctrl+g`: workbench.action.gotoLine => **Use `alt+g g` instead**;

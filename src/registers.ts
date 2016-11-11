@@ -1,13 +1,10 @@
 import * as vscode from 'vscode';
+import {RectangleContent} from './rectangles';
 
 export enum RegisterKind {
     KText = 1,
     KPoint = 2,
     KRectangle = 3
-};
-
-export class RectangleContent { // TODO: move it to rectangle.ts eventually.
-    // TBD
 };
 
 export class RegisterContent {
@@ -41,3 +38,27 @@ export class RegisterContent {
         return this.content;
     }
 };
+
+export class RegisterContainer {
+    private registers: { [key:string] : RegisterContent; };
+    
+    constructor() {
+        this.registers = {};
+    }
+
+    public set(key : string, value : RegisterContent) {
+        if (null == key) {
+            return;
+        }
+        this.registers[key] = value;
+        return;
+    }
+
+    public get(key : string) : RegisterContent {
+        return (null == key) ? null : this.registers[key];
+    }
+
+    public clear() : void {
+        this.registers = {};
+    }
+}

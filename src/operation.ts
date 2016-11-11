@@ -43,7 +43,7 @@ export class Operation {
                 this.editor.setStatusBarMessage("Undo!");
             },
             'C-g': () => {
-                this.editor.setStatusBarMessage("Quit");
+                this.editor.onCancel();
             },
             "C-x_r": () => {
                 this.editor.setRMode();
