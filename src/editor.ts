@@ -26,6 +26,12 @@ export class Editor {
         });
     }
 
+    onCancel() : void {
+        this.keybindProgressMode = KeybindProgressMode.None; // cancel long keybinding in progress (if any)
+        this.setStatusBarPermanentMessage("");
+        this.setStatusBarMessage("Quit");
+    }
+
     setStatusBarMessage(text: string): vscode.Disposable {
         return vscode.window.setStatusBarMessage(text, 1000);
     }
