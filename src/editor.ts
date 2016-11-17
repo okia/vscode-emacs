@@ -43,6 +43,11 @@ export class Editor {
         return vscode.window.setStatusBarMessage(text); 
     }
 
+    setStatusBarMessageAndBlank(text: string): vscode.Disposable {
+        setStatusBarPermanentMessage("");
+        return vscode.window.setStatusBarMessage(text, 1000);
+    }
+
     getSelectionRange(): vscode.Range {
         let selection = vscode.window.activeTextEditor.selection,
             start = selection.start,
@@ -225,55 +230,48 @@ export class Editor {
                 {
                     // Rectangles
                     case 'r': // rectangle -> register
-                        this.setStatusBarPermanentMessage("");
-                        this.setStatusBarPermanentMessage("Copy rectangle to register:");
+                        this.setStatusBarMessageAndBlank("Copy rectangle to register:");
                         this.keybindProgressMode = KeybindProgressMode.RModeR;
                         fHandled = true;
                         break;
 
                     case 'd': // delete rectangle
-                        this.setStatusBarPermanentMessage("");
-                        this.setStatusBarMessage("C-x r d");
+                        this.setStatusBarMessageAndBlank("C-x r d");
                         this.killedRectangle.delete();
                         this.keybindProgressMode = KeybindProgressMode.None;
                         fHandled = true;
                         break;
 
                     case 'k': // kill rectangle
-                        this.setStatusBarPermanentMessage("");
-                        this.setStatusBarMessage("C-x r k");
+                        this.setStatusBarMessageAndBlank("C-x r k");
                         this.killedRectangle.kill();
                         this.keybindProgressMode = KeybindProgressMode.None;
                         fHandled = true;
                         break;
 
                     case 'y': // yank rectangle
-                        this.setStatusBarPermanentMessage("");
-                        this.setStatusBarMessage("C-x r y");
+                        this.setStatusBarMessageAndBlank("C-x r y");
                         this.killedRectangle.yank();
                         this.keybindProgressMode = KeybindProgressMode.None;
                         fHandled = true;
                         break;
 
                     case 'o': // open rectangle
-                        this.setStatusBarPermanentMessage("");
-                        this.setStatusBarMessage("C-x r o");
+                        this.setStatusBarMessageAndBlank("C-x r o");
                         this.killedRectangle.open();
                         this.keybindProgressMode = KeybindProgressMode.None;
                         fHandled = true;
                         break;
 
                     case 'c': // blank rectangle
-                        this.setStatusBarPermanentMessage("");
-                        this.setStatusBarMessage("C-x r c");
+                        this.setStatusBarMessageAndBlank("C-x r c");
                         this.killedRectangle.blank();
                         this.keybindProgressMode = KeybindProgressMode.None;
                         fHandled = true;
                         break;
 
                     case 't':
-                        this.setStatusBarPermanentMessage("");
-                        this.setStatusBarMessage("'C-x r t' (prefix each line with a string) is not supported.");
+                        this.setStatusBarMessageAndBlank("'C-x r t' (prefix each line with a string) is not supported.");
                         this.keybindProgressMode = KeybindProgressMode.None;
                         fHandled = true;
                         break;
@@ -297,22 +295,19 @@ export class Editor {
                 break;
 
             case KeybindProgressMode.RModeS:
-                this.setStatusBarPermanentMessage("");
-                this.saveTextToRegister(text);
+                this.setStatusBarMessageAndBlank(text);
                 this.keybindProgressMode = KeybindProgressMode.None;
                 fHandled = true;
                 break;
 
             case KeybindProgressMode.RModeI:
-                this.setStatusBarPermanentMessage("");
-                this.restoreContentFromRegister(text);
+                this.setStatusBarMessageAndBlank(text);
                 this.keybindProgressMode = KeybindProgressMode.None;
                 fHandled = true;
                 break;
 
             case KeybindProgressMode.RModeR:
-                this.setStatusBarPermanentMessage("");
-                this.saveRectangleToRegister(text);
+                this.setStatusBarMessageAndBlank(text);
                 this.keybindProgressMode = KeybindProgressMode.None;
                 fHandled = true;
                 break;

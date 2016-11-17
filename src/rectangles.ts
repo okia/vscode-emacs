@@ -9,17 +9,8 @@ export class RectangleContent {
         this.parent = parent;
     }
 
-    getContentHeight() {
-       return (null == this.content) ? 0 : this.content.length; 
-    }
-
-    getContentWidth() {
-       return (null == this.content) ? 0 : this.content[0].length; 
-    }
-
     // Update/Refresh rectangle from current Editor's selection
     refresh() { 
-        console.log('Update rectangle content');
         if (null == this.parent) {
             return;
         }
@@ -32,7 +23,6 @@ export class RectangleContent {
 
     // Empty/Clear current rectangle
     empty() {
-        console.log('Empty rectangle content');
         if (null == this.parent) {
             return;
         }
@@ -42,7 +32,6 @@ export class RectangleContent {
 
     // Yank rectangle into Editor at current mark
     yank() {
-        console.log('Yank rectangle');
         if (null == this.parent) {
             return;
         }
@@ -91,7 +80,6 @@ export class RectangleContent {
 
     // Note: Unlike "kill", "delete" does not save rectangle's content ...
     delete() : void {
-        console.log('Delete rectangle');
         if (null == this.parent) {
             return;
         }
@@ -111,7 +99,6 @@ export class RectangleContent {
     
     // Kill rectangle at current mark
     kill() : void {
-        console.log('Kill rectangle');
         if (null == this.parent) {
             return;
         }
@@ -132,8 +119,6 @@ export class RectangleContent {
 
     // blank rectangle
     blank() : void {
-        console.log('blank rectangle');
-
         if (null == this.parent) {
             return;
         }
@@ -156,8 +141,6 @@ export class RectangleContent {
 
     // open rectangle
     open() : void {
-        console.log('open rectangle');
-
         if (null == this.parent) {
             return;
         }
@@ -185,12 +168,19 @@ export class RectangleContent {
     }
 
     // *** Helpers
+    getContentHeight() {
+       return (null == this.content) ? 0 : this.content.length; 
+    }
+
+    getContentWidth() {
+       return (null == this.content) ? 0 : this.content[0].length; 
+    }
+
     private GetSelectedRows() : Array<vscode.Range> {
         const range: vscode.Range = this.parent.getSelectionRange();
         if (null == range) {
             return;
         }
-        console.log("Range(" + range.start.line + "," + range.start.character + "," + range.end.line + "," + range.end.character  + ")");
 
         let rect : Array<vscode.Range> = [];
         for (let jx : number = range.start.line; jx <= range.end.line; jx++) {
