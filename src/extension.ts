@@ -43,7 +43,6 @@ export function activate(context: vscode.ExtensionContext): void {
 		if (!vscode.window.activeTextEditor) {
 			return;
 		}
-        console.log("!!! TYPE !!!");
 		op.onType(args.text);        
     }));
 

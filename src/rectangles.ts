@@ -9,6 +9,12 @@ export class RectangleContent {
         this.parent = parent;
     }
 
+    static fromActiveSelection(parent : Editor)  : RectangleContent {
+        let rect : RectangleContent = new RectangleContent(parent);
+        rect.refresh();
+        return rect;
+    }
+
     // Update/Refresh rectangle from current Editor's selection
     refresh() { 
         if (null == this.parent) {
@@ -68,11 +74,14 @@ export class RectangleContent {
                 editBuilder.insert(new vscode.Position(totalLinesInDocument + 1, 0), postfix);
             }
 
-            // Known problem - making cursor movement part of the transaction seems to be non-trivial
-            // TODO: investigate!
-            // emulate Emacs and set cursor at the upper-botom of just inserted rectangle
-            // const newPosition : vscode.Position = activeSelection.translate(rectHeight, rectWidth-1);
-            // this.parent.setSelection(newPosition, newPosition);
+            // emulate Emacs and set cursor at the botom-left corner of just inserted rectangle
+            // Known problem: VSCode Extension API does not seem to treat cursor movement part 
+            // inside editBuilder function as part of transaction.
+            // TODO: Shall we bug the issue to VSCode team?
+            const newX : number = activePosX + rectWidth; 
+            const newY : number = activePosY + rectHeight - 1; 
+            const newPosition : vscode.Position = new vscode.Position(newY, newX);
+            this.parent.setSelection(newPosition, newPosition);
         });
         
         return;
