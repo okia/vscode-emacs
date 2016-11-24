@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+// import {RectangleContent, RectLocSize} from './rectangles';
 import {RectangleContent} from './rectangles';
 import {RegisterKind, RegisterContent, RegisterContainer} from './registers';
 
@@ -370,7 +371,14 @@ export class Editor {
             break;
 
             case RegisterKind.KRectangle:
+            {
                 (<RectangleContent>content).yank();
+                // emulate Emacs and set cursor at the botom-left corner of just yanked rectangle
+                // const newX : number = activePosX + rectWidth; 
+                // const newY : number = activePosY + rectHeight - 1; 
+                // const newPosition : vscode.Position = new vscode.Position(newY, newX);
+                // this.parent.setSelection(newPosition, newPosition);
+            }   
             break;
         }
 

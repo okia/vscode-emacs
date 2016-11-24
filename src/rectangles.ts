@@ -1,6 +1,20 @@
 import * as vscode from 'vscode';
 import {Editor} from './editor';
 
+export class LocAndSize {
+    public readonly activePosX : number;
+    public readonly activePosY : number;
+    public readonly rectHeight : number;
+    public readonly rectWidth  : number;
+
+    constructor (X : number, Y : number, H : number, W : number) {
+        this.activePosX = X;
+        this.activePosY = Y;
+        this.rectHeight = H;
+        this.rectWidth  = W;
+    }
+};
+
 export class RectangleContent {
     private parent : Editor;
     private content: Array<string> = [];
@@ -44,31 +58,27 @@ export class RectangleContent {
 
         vscode.commands.executeCommand("emacs.exitMarkMode"); // emulate Emacs
 
-        const activeSelection : vscode.Position = this.parent.getSelection().active;
-        const activePosX : number = activeSelection.character;
-        const activePosY : number = activeSelection.line;
-        const rectHeight : number = this.getContentHeight();
-        const rectWidth  : number = this.getContentWidth();
+        const las : LocAndSize = this.GetCurrentLocAndSize();
 
         vscode.window.activeTextEditor.edit(editBuilder => {
             // Now Yank rectangle
             const totalLinesInDocument : number = vscode.window.activeTextEditor.document.lineCount;
             let jx : number = 0;
-            for (jx = 0; (jx < rectHeight) && (activePosY + jx < totalLinesInDocument); jx++) {
-                const currentLine : vscode.TextLine = vscode.window.activeTextEditor.document.lineAt(activePosY + jx);
+            for (jx = 0; (jx < las.rectHeight) && (las.activePosY + jx < totalLinesInDocument); jx++) {
+                const currentLine : vscode.TextLine = vscode.window.activeTextEditor.document.lineAt(las.activePosY + jx);
                 const currentLineEndX : number = currentLine.range.end.character;
                 // depending on the active position and the length of current line, padding might be needed
-                const padding : string = (activePosX <= currentLineEndX) ? "" : " ".repeat(activePosX - currentLineEndX);
+                const padding : string = (las.activePosX <= currentLineEndX) ? "" : " ".repeat(las.activePosX - currentLineEndX);
                 if (padding.length > 0) {
-                    editBuilder.insert(new vscode.Position(activePosY + jx, currentLineEndX), padding);
+                    editBuilder.insert(new vscode.Position(las.activePosY + jx, currentLineEndX), padding);
                 }
-                editBuilder.insert(new vscode.Position(activePosY + jx, activePosX), this.content[jx]);
+                editBuilder.insert(new vscode.Position(las.activePosY + jx, las.activePosX), this.content[jx]);
             }
 
             // insert the lines that do not exist yet
             let postfix : string = "";
-            for (;jx < rectHeight; jx++) {
-                postfix += "\r\n" + " ".repeat(activePosX) + this.content[jx];
+            for (;jx < las.rectHeight; jx++) {
+                postfix += "\r\n" + " ".repeat(las.activePosX) + this.content[jx];
             }
             if (postfix.length > 0) {
                 editBuilder.insert(new vscode.Position(totalLinesInDocument + 1, 0), postfix);
@@ -78,8 +88,8 @@ export class RectangleContent {
             // Known problem: VSCode Extension API does not seem to treat cursor movement part 
             // inside editBuilder function as part of transaction.
             // TODO: Shall we bug the issue to VSCode team?
-            const newX : number = activePosX + rectWidth; 
-            const newY : number = activePosY + rectHeight - 1; 
+            const newX : number = las.activePosX + las.rectWidth; 
+            const newY : number = las.activePosY + las.rectHeight - 1; 
             const newPosition : vscode.Position = new vscode.Position(newY, newX);
             this.parent.setSelection(newPosition, newPosition);
         });
@@ -170,18 +180,28 @@ export class RectangleContent {
         return;
     }
     
-    // save rectangle to register
-    saveToRegister(registerName: string) : void {
+    // // save rectangle to register
+    // saveToRegister(registerName: string) : void {
 
-        return;
+    //     return;
+    // }
+
+    // get rectangle "location"
+    public GetCurrentLocAndSize() : LocAndSize {
+        const activeSelection : vscode.Position = this.parent.getSelection().active;
+        const activePosX : number = activeSelection.character;
+        const activePosY : number = activeSelection.line;
+        const rectHeight : number = this.getContentHeight();
+        const rectWidth  : number = this.getContentWidth();
+        return new LocAndSize(activePosX, activePosY, rectHeight, rectWidth);
     }
 
     // *** Helpers
-    getContentHeight() {
+    private getContentHeight() {
        return (null == this.content) ? 0 : this.content.length; 
     }
 
-    getContentWidth() {
+    private getContentWidth() {
        return (null == this.content) ? 0 : this.content[0].length; 
     }
 
