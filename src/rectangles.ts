@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import {Editor} from './editor';
 
-export class LocAndSize {
+class LocAndSize {
     public readonly activePosX : number;
     public readonly activePosY : number;
     public readonly rectHeight : number;
@@ -17,10 +17,13 @@ export class LocAndSize {
 
 export class RectangleContent {
     private parent : Editor;
-    private content: Array<string> = [];
+    private defaultStringifyValue : string;
+    private content: Array<string>;
 
     constructor (parent : Editor) {
         this.parent = parent;
+        this.defaultStringifyValue = "";
+        this.content = [];
     }
 
     static fromActiveSelection(parent : Editor)  : RectangleContent {
@@ -85,13 +88,18 @@ export class RectangleContent {
             }
 
             // emulate Emacs and set cursor at the botom-left corner of just inserted rectangle
-            // Known problem: VSCode Extension API does not seem to treat cursor movement part 
-            // inside editBuilder function as part of transaction.
-            // TODO: Shall we bug the issue to VSCode team?
-            const newX : number = las.activePosX + las.rectWidth; 
-            const newY : number = las.activePosY + las.rectHeight - 1; 
-            const newPosition : vscode.Position = new vscode.Position(newY, newX);
-            this.parent.setSelection(newPosition, newPosition);
+            // Known problems: 
+            // 1) Setting up cursor position inside transaction sometimes leads to 
+            //    unexpected results.
+            // 2) VSCode Extension API does not seem to treat cursor movement inside editBuilder 
+            //    function as part of transaction.
+            //
+            // @okia: comment for now, INVESTIGATE ! 
+            // const newX : number = las.activePosX + las.rectWidth; 
+            // const newY : number = las.activePosY + las.rectHeight - 1;
+            // console.log("activePosX="+las.activePosX+",activePosY="+las.activePosY+",newX="+newX+",newY="+newY); 
+            // const newPosition : vscode.Position = new vscode.Position(newY, newX);
+            // this.parent.setSelection(newPosition, newPosition);
         });
         
         return;
@@ -180,11 +188,45 @@ export class RectangleContent {
         return;
     }
     
-    // // save rectangle to register
-    // saveToRegister(registerName: string) : void {
+    // replace rectangle content with string on each line
+    stringify(): void {
+        if (null == this.parent) {
+            return;
+        }
 
-    //     return;
-    // }
+        // emulate emacs: ask for string anyway, whether rectangle is empty or not
+        const myPrompt : string = (0 == this.defaultStringifyValue.length) ?
+          "String rectangle (default):" : 
+          "String rectangle (default '" + this.defaultStringifyValue + "'):";
+
+        vscode.window.showInputBox({ prompt: myPrompt })
+            .then((val: string) => {
+                if (val != undefined) {
+                    const coords: Array<vscode.Range> = this.GetSelectedRows();
+                    const las: LocAndSize = this.GetCurrentLocAndSize();
+                    if (!RectangleContent.IsRectangleEmpty(coords)) {
+                        vscode.commands.executeCommand("emacs.exitMarkMode"); // emulate Emacs 
+                        vscode.window.activeTextEditor.edit(editBuilder => {
+                            for (let ix: number = 0; ix < coords.length; ix++) {
+                                editBuilder.replace(coords[ix], val);
+                            }
+                        // TODO: emulate Emacs, move mark appropriately
+                        // ...
+                        });
+                    } else {
+                        vscode.window.activeTextEditor.edit(editBuilder => {
+                            editBuilder.insert(new vscode.Position(las.activePosY, las.activePosX), val);
+                        // TODO: emulate Emacs, move mark appropriately
+                        // ...
+                        });
+                    }
+
+                    this.defaultStringifyValue = val;
+                }
+            });
+
+        return;
+    }
 
     // get rectangle "location"
     public GetCurrentLocAndSize() : LocAndSize {
@@ -202,7 +244,7 @@ export class RectangleContent {
     }
 
     private getContentWidth() {
-       return (null == this.content) ? 0 : this.content[0].length; 
+       return ((null == this.content) || (0 == this.content.length)) ? 0 : this.content[0].length; 
     }
 
     private GetSelectedRows() : Array<vscode.Range> {
