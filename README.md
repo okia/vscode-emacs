@@ -41,6 +41,7 @@ Use `Shift+Insert` to paste from clipboard.
 | `C-h` | OK | Delete left (BACKSPACE) |
 | `M-d` | OK | Delete word |
 | `C-k` | OK | Kill to line end |
+| `C-S-Bksp` | OK | Kill entire line |
 | `C-w` | OK | Kill region |
 | `M-w` | OK | Copy region to kill ring |
 | `C-y` | OK | Yank |

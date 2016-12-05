@@ -44,7 +44,7 @@ export class Editor {
     }
 
     setStatusBarMessageAndBlank(text: string): vscode.Disposable {
-        setStatusBarPermanentMessage("");
+        this.setStatusBarPermanentMessage("");
         return vscode.window.setStatusBarMessage(text, 1000);
     }
 
@@ -380,5 +380,10 @@ export class Editor {
         this.registers.set(registerName, RegisterContent.fromRectangle(rect));
         return;
     }
-    
+
+    deleteLine() : void {
+        vscode.commands.executeCommand("emacs.exitMarkMode"); // emulate Emacs
+        vscode.commands.executeCommand("editor.action.deleteLines");
+        return;
+    }   
 }

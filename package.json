@@ -337,6 +337,10 @@
         "key": "ctrl+x b",
         "command": "workbench.action.quickOpen"
       },{
+        "key": "ctrl+shift+backspace",
+        "command": "emacs.C-S_bs",
+        "when": "editorTextFocus"
+      },{
         "key": "ctrl+x r",
         "command": "emacs.C-x_r",
         "when": "editorTextFocus"
