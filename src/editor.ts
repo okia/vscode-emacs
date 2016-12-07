@@ -331,4 +331,15 @@ export class Editor {
         }  
         return;
     }
+
+    moveFwdOverSexp() : void {
+        console.log("moveFwdOverSexp");
+        return;
+    } 
+
+    moveBkwdOverSexp() : void {
+        console.log("moveBkwdOverSexp");
+        return;
+    }   
+  
 }

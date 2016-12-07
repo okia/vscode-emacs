@@ -45,6 +45,12 @@ export class Operation {
             'C-g': () => {
                 this.editor.setStatusBarMessage("Quit");
             },
+            "C-M-f": () => {
+                this.editor.moveFwdOverSexp();
+            },
+            "C-M-b": () => {
+                this.editor.moveBkwdOverSexp();
+            },
             "C-x_r": () => {
                 this.editor.setRMode();
             },

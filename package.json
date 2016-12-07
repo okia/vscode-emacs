@@ -337,6 +337,14 @@
         "key": "ctrl+x b",
         "command": "workbench.action.quickOpen"
       },{
+        "key": "ctrl+alt+f",
+        "command": "emacs.C-M-f",
+        "when": "editorTextFocus"
+      },{
+        "key": "ctrl+alt+b",
+        "command": "emacs.C-M-b",
+        "when": "editorTextFocus"
+      },{
         "key": "ctrl+x r",
         "command": "emacs.C-x_r",
         "when": "editorTextFocus"
